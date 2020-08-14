@@ -1,0 +1,132 @@
+# Define Variables and Import Packages
+import random
+suits = ["Clubs","Diamonds","Hearts","Spades"]
+ranks = ["Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten","Jack","Queen","King","Ace"]
+value = {"Two":2,"Three":3,"Four":4,"Five":5,"Six":6,"Seven":7,"Eight":8,"Nine":9,"Ten":10,"Jack":11,"Queen":12,"King":13,"Ace":14}
+
+# Define Card Class
+class Card():
+    def __init__(self,suit,rank):
+        self.suit = suit
+        self.rank = rank
+        self.value = value[rank]
+    
+    def __str__(self):
+        return f"{self.rank} of {self.suit}"
+        
+# Define Deck Class               
+class Deck():
+    def __init__(self):
+        self.carddeck = []
+        for suit in suits:
+            for rank in ranks:
+                self.carddeck.append(Card(suit,rank))
+    def shuffle(self):
+        random.shuffle(self.carddeck)
+    def dealone(self):
+        return self.carddeck.pop(0)       
+        
+# Define Player Class        
+class Player():
+    def __init__(self,name):
+        self.name = name
+        self.allcards = []
+    def addcards(self,newcards):
+        if type(newcards) == type([]):
+            self.allcards.extend(newcards)
+        else:
+            self.allcards.append(newcards)
+    def extractcard(self):
+        return self.allcards.pop(0)
+    def __str__(self):
+        return f"{self.name} has {len(self.allcards)} cards"      
+        
+
+
+# Code for Game
+start_game = True
+while start_game == True: 
+    
+    x = input("Do you want to play the game?(Y/N) ").lower()
+    
+    if x == "y":
+        pass
+    elif x=="n":
+        break
+    else:
+        continue
+        
+    
+    thedeck = Deck()
+    thedeck.shuffle()
+
+    player1 = input("\nType in Player 1's Name! ")
+    player2 = input("\nType in Player 2's Name! ")
+
+    player1 = Player(player1)
+    player2 = Player(player2)
+
+    for num in range(26):
+        player1.addcards(thedeck.dealone())
+        player2.addcards(thedeck.dealone())
+
+    game_on = True
+    war_mode = False
+    roundnum = 0
+    while game_on == True:
+        while war_mode == False:
+            roundnum += 1
+            print(f"\nRound {roundnum}")
+            if len(player1.allcards) == 0:
+                print(f"{player1.name} has run out of cards!\n{player2.name} wins!")
+                game_on=False
+                break
+            elif len(player2.allcards) == 0:
+                print(f"{player2.name} has run out of cards!\n{player1.name} wins!")
+                game_on=False
+                break
+            else:
+                p1playingcard = player1.extractcard()
+                p2playingcard = player2.extractcard()
+                if p1playingcard.value > p2playingcard.value:
+                    player1.addcards(p1playingcard)
+                    player1.addcards(p2playingcard)
+                    print(f"{player1.name} wins this round")
+                elif p2playingcard.value > p1playingcard.value:
+                    player2.addcards(p2playingcard)
+                    player2.addcards(p1playingcard)
+                    print(f"{player2.name} wins this round")
+                elif p1playingcard.value == p2playingcard.value:
+                    war_mode = True
+        else:
+            print("War!")
+            p1set = []
+            p2set = []
+            p1set.append(p1playingcard)
+            p2set.append(p2playingcard)
+            if len(player1.allcards) < 3:
+                print(f"\n{player1.name} has run out of cards!\n{player2.name} wins!")
+                game_on = False
+                break
+            elif len(player2.allcards) < 3:
+                print(f"\n{player2.name} has run out of cards!\n{player1.name} wins!")
+                game_on = False
+                break
+            else:  
+                war_continues = True
+                while war_continues == True:
+                    for i in range(3):
+                        p1set.append(player1.extractcard())
+                        p2set.append(player2.extractcard())
+                    if p1set[-1].value > p2set[-1].value:
+                        player1.addcards(p1set)
+                        player1.addcards(p2set)
+                        war_continues = False
+                        war_mode = False
+                    if p2set[-1].value > p1set[-1].value:
+                        player2.addcards(p2set)
+                        player2.addcards(p1set)
+                        war_continues = False
+                        war_mode = False
+                    if p1set[-1].value == p2set[-1].value:
+                        pass        
